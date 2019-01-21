@@ -51,7 +51,7 @@ class HelloController {
     @ResponseBody
     public String hello() {
         accessLog.incrementCounter();
-        return "Hello world";
+        return "Hello metrics: " + accessLog.getCounter();
     }
 }
 

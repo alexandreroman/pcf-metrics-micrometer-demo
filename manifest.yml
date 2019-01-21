@@ -3,3 +3,5 @@ applications:
   - name: pcf-metrics-micrometer-demo
     instances: 1
     path: target/pcf-metrics-micrometer-demo.jar
+    services:
+      - metrics-redis

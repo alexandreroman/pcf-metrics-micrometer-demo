@@ -28,12 +28,12 @@ import org.springframework.boot.actuate.endpoint.annotation.ReadOperation;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.data.redis.connection.RedisConnectionFactory;
+import org.springframework.data.redis.support.atomic.RedisAtomicLong;
 import org.springframework.stereotype.Component;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.ResponseBody;
-
-import java.util.concurrent.atomic.AtomicLong;
 
 @SpringBootApplication
 public class Application {
@@ -55,23 +55,32 @@ class HelloController {
     }
 }
 
+@Configuration
+class RedisConfig {
+    @Bean
+    public RedisAtomicLong redisAccessLogCounter(RedisConnectionFactory connFactory) {
+        return new RedisAtomicLong("accesslog.counter", connFactory);
+    }
+}
+
 /**
  * Business component holding metric values.
  */
 @Component
+@RequiredArgsConstructor
 class AccessLog {
-    private final AtomicLong counter = new AtomicLong();
+    private final RedisAtomicLong redisAccessLogCounter;
 
     public void incrementCounter() {
-        counter.incrementAndGet();
+        redisAccessLogCounter.incrementAndGet();
     }
 
     public long getCounter() {
-        return counter.get();
+        return redisAccessLogCounter.get();
     }
 
     public void resetCounter() {
-        counter.set(0);
+        redisAccessLogCounter.set(0L);
     }
 }
 

@@ -11,6 +11,11 @@ Compile this project using a JDK 8:
 $ ./mvnw clean package
 ```
 
+Start a Redis server (used to store metric values):
+```bash
+$ docker run --rm --name redis -p "6379:6379/tcp" redis:5
+```
+
 Run this app:
 ```bash
 $ java -jar target/pcf-metrics-micrometer-demo.jar
@@ -19,7 +24,7 @@ $ java -jar target/pcf-metrics-micrometer-demo.jar
 This app is exposing a single endpoint at http://localhost:8080:
 ```bash
 $ curl http://localhost:8080
-Hello world%
+Hello metrics: 1%
 ```
 
 Each time you access this endpoint, a counter is incremented.
@@ -41,6 +46,11 @@ $ curl http://localhost:8080/actuator/accesslog
 Create a [PCF Metrics Forwarder](https://docs.pivotal.io/metrics-forwarder) service instance:
 ```bash
 $ cf create-service metrics-forwarder unlimited metrics-forwarder
+```
+
+Create a Redis instance:
+```bash
+$ cf create-service p-redis shared-vm metrics-redis
 ```
 
 Push this app to PCF:
